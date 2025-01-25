@@ -1,0 +1,230 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #111; /* Black background */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: #ddd; /* Light grey text color */
+}
+
+/* Main Content */
+.main-content {
+    position: relative;
+    margin: 0 240px; /* Account for the sidebar width */
+    transition: margin-left 0.3s ease;
+}
+
+/* Chat Box Section */
+.chat-box-section {
+    flex-grow: 1;
+    display: flex;
+    justify-content: space-between; 
+    flex-direction: column;
+}
+
+.chat-box {
+    flex-grow: 1;
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    /* scrollbar-width: thin; 
+    scrollbar-color: #888 #f1f1f1;  */
+    border: 1px solid #444;
+    background-color: #1a1a1a;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.chat-box::-webkit-scrollbar {
+    width: 0px;
+}
+
+.chat-box::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.chat-box::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.chat-box::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Chat Messages */
+.message {
+    padding: 10px 10px;
+    border-radius: 20px;
+    max-width: 75%;
+    margin-bottom: 10px;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.message.question {
+    background-color: #333333; /* Grey for user input */
+    color: white;
+    margin-right: 10px;
+    align-self: flex-end; /* Align to the right */
+    text-align: right;
+}
+
+.message.answer {
+    margin-left: 10px;
+    background-color: #212121; /* Dark grey for chatbot responses */
+    color: #ddd;
+    align-self: flex-start; /* Align to the left */
+    text-align: left;
+}
+
+/* Chat Form */
+.chat-form-container {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 600px;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #00000000;
+}
+
+.chat-form-container input,
+.chat-form-container button {
+    border-radius: 50px;
+}
+
+.chat-form-container .btn {
+    margin-left: 10px;
+}
+
+/* Scroll to Bottom Button */
+#scrollToBottom {
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 50%;
+}
+
+/* Buttons */
+button {
+    border: none;
+    padding: 40px 40px;
+    border-radius: 50px; /* Oval shape */
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #444444; /* Lighter grey */
+}
+
+/* Like/Unlike Section */
+.like-unlike-section {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.like-btn, .unlike-btn {
+    cursor: pointer;
+    margin-left: 15px;
+    transition: transform 0.2s;
+}
+
+.like-btn i, .unlike-btn i {
+    font-size: 20px;
+    color: #6c757d;
+}
+
+.like-btn i.active {
+    color: #fff; /* Green for like */
+}
+
+.unlike-btn i.active {
+    color: #fff; /* Red for unlike */
+}
+
+.like-btn i:hover, .unlike-btn i:hover {
+    transform: scale(1.2);
+}
+
+/* Input Field */
+#user_input {
+    height: 45px;
+    font-size: 16px;
+    padding: 10px 15px;
+    border-radius: 30px;
+    background-color: #1a1a1a;
+    color: #ffffff;
+    border: 2px solid #333;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+#user_input::placeholder {
+    color: #6c757d;
+    opacity: 0.7;
+}
+
+#user_input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
+    background-color: #212121;
+}
+
+#user_input:hover {
+    border-color: #495057;
+}
+
+/* Floating Scroll Button */
+.btn-floating-scroll {
+    background-color: #888;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-floating-scroll:hover {
+    background-color: #555;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounce {
+    from {
+        transform: translateY(0);
+    }
+    to {
+        transform: translateY(-5px);
+    }
+}

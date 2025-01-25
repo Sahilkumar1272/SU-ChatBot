@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SU GPT</title>
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+
+
+
+        <div class="container-fluid">
+            <!-- Main Content -->
+            <div class="col-md-8 main-content">
+                {% if not messages %}
+            <!-- Show tagline and FAQ only when there are no messages -->
+            <header class="text-center my-5">
+                <h1 class="display-4 font-weight-bold text-primary">Welcome to SU - Chatbot</h1>
+                <p class="lead mt-3 text-muted">
+                    Your virtual assistant for all things related to the university. 
+                    Ask questions about courses, grades, or any university-related information!
+                </p>
+            </header>
+  
+                {% endif %}
+
+
+                <!-- Chat Box Section -->
+                <section class="chat-box-section">
+                    <div class="chat-box">
+                        {% if messages %}
+                        {% for message in messages %}
+                        <div 
+                        class="message {{ message.type }}" 
+                        data-id="{{ loop.index }}" 
+                        {% if message.type == 'answer' %}
+                            data-question="{{ messages[loop.index0 - 1].text if loop.index0 > 0 }}"
+                            data-answer="{{ message.text }}"
+                        {% endif %}
+                    >
+                            <p>{{ message.text }}</p>
+                            {% if message.type == 'answer' %}
+                                <!-- Like and Unlike buttons -->
+                                <span class="like-btn">
+                                    <i onclick="toggleFeedback(this, 'like')" class="fas fa-thumbs-up"></i>
+                                </span>
+                                <span class="unlike-btn">
+                                    <i onclick="toggleFeedback(this, 'unlike')" class="fas fa-thumbs-down"></i>
+                                </span>
+                                
+                        {% endif %}
+                        </div>
+                        {% endfor %}
+
+                        <!-- Scroll to Bottom Button -->
+                        <div class="text-center">
+                            <button id="scrollToBottom" type="submit" class="btn btn-secondary ">
+                                <i class="bi bi-arrow-down"></i>
+                            </button>
+                        </div>
+                        {% endif %}
+                    </div>
+                </section>
+
+                
+
+                <!-- Fixed Input Form -->
+                <div class="chat-form-container">
+                    <form id="chat-form" method="POST" class="d-flex">
+                        <input type="text" name="user_input" id="user_input" class="form-control" placeholder="Enter your question" autocomplete="off">
+                        <button type="submit" class="btn btn-secondary">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                        <button type="submit" name="reset" value="true" class="btn btn-danger">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+    </div>
+
+    <!-- Bootstrap JS and jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+       
+
+        // Scroll to bottom function for the chat box
+        document.getElementById("scrollToBottom").addEventListener("click", function() {
+            const chatBox = document.querySelector(".chat-box");
+            chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom
+        });
+        function toggleFeedback(element, type) {
+    // Find the parent message container
+    const messageContainer = element.closest('.message');
+
+    // Check if the message container exists
+    if (!messageContainer) {
+        console.error('No message container found');
+        return;
+    }
+
+    // Try to find like and unlike buttons within the message container
+    const likeBtn = messageContainer.querySelector('.like-btn i');
+    const unlikeBtn = messageContainer.querySelector('.unlike-btn i');
+
+    // Check if buttons exist
+    if (!likeBtn || !unlikeBtn) {
+        console.error('Like or unlike buttons not found');
+        return;
+    }
+
+    // If clicking the already active button, just remove its active state
+    if (element.classList.contains('active')) {
+        element.classList.remove('active');
+        return;
+    }
+
+    // Remove active class from both buttons first
+    likeBtn.classList.remove('active');
+    unlikeBtn.classList.remove('active');
+
+    // Add active class to the clicked button
+    element.classList.add('active');
+
+    // If the "like" or "unlike" button is clicked, store the data
+    const data = {
+        messageId: messageContainer.getAttribute('data-id'),
+        action: type,
+        question: messageContainer.getAttribute('data-question'),
+        answer: messageContainer.getAttribute('data-answer'),
+    };
+
+    // Call the API to store the data
+    fetch('/api/save-feedback', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log('Feedback saved successfully');
+        } else {
+            console.error('Failed to save feedback');
+        }
+    })
+    .catch(error => {
+        console.error('Error while saving feedback:', error);
+    });
+}
+
+document.getElementById('chat-form').addEventListener('submit', function (event) {
+    event.preventDefault(); // Prevent the default form submission
+
+    const userInput = document.getElementById('user_input').value;
+
+    // Check if the reset button was clicked
+    if (event.submitter && event.submitter.name === 'reset') {
+        fetch('/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({ reset: true })
+        })
+        .then(response => response.text())
+        .then(html => {
+            // Update the page content
+            document.querySelector('.main-content').innerHTML = new DOMParser()
+                .parseFromString(html, 'text/html')
+                .querySelector('.main-content').innerHTML;
+        });
+    } else if (userInput.trim() !== '') {
+        fetch('/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({ user_input: userInput })
+        })
+        .then(response => response.text())
+        .then(html => {
+            // Update the page content
+            document.querySelector('.main-content').innerHTML = new DOMParser()
+                .parseFromString(html, 'text/html')
+                .querySelector('.main-content').innerHTML;
+
+            // Clear the input field
+            document.getElementById('user_input').value = '';
+        });
+    }
+});
+
+
+  </script>
+</body>
+</html>
